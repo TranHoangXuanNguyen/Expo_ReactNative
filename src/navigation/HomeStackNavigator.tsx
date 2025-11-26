@@ -4,6 +4,12 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import HomeScreen from '../screens/HomeScreen';
 import DetailsScreen from '../screens/DetailsScreen';
 import ProfileScreen from '../screens/ProfileScreen';
+import ShopScreen from '../screens/ShopScreen';
+import CategoriesScreen from '../screens/CategoriesScreen';
+import CartScreen from '../screens/CartScreen';
+import AdminDashboard from '../screens/admin/AdminDashboard';
+import AdminProducts from '../screens/admin/AdminProducts';
+import AdminOrders from '../screens/admin/AdminOrders';
 const HomeStack = createNativeStackNavigator();
 
 export default function HomeStackNavigator() {
@@ -16,6 +22,14 @@ export default function HomeStackNavigator() {
       component={ProfileScreen} 
       options={{ headerShown: true, title: 'Cá nhân' }} 
   />
+
+      <HomeStack.Screen name="Shop" component={ShopScreen} />
+      <HomeStack.Screen name="Categories" component={CategoriesScreen} />
+      <HomeStack.Screen name="Cart" component={CartScreen} /> 
+      {/* Nhóm màn hình Admin */}
+      <HomeStack.Screen name="AdminDashboard" component={AdminDashboard} />
+      <HomeStack.Screen name="AdminProducts" component={AdminProducts} />
+      <HomeStack.Screen name="AdminOrders" component={AdminOrders} />
     </HomeStack.Navigator>
   );
 }

@@ -1,23 +1,29 @@
-import { supabase } from '../../lib/supabaseClient'; // Import client Supabase
+import { supabase } from '../../lib/supabaseClient';
 
 export interface Book {
   id: number;
   title: string;
   author: string;
-  category: string;
-}
+  price: number;   
+  category: string; 
+  description: string;  
+  imageUrl: string;   
+ }
 
 export const BookRepository = {
   /**
-   * Tạo một book mới và trả về ID của nó
+   * Tạo một book mới
    */
-  create: async (title: string, author: string, categoryId: number): Promise<number> => {
+  create: async (title: string, author: string, price: number, categoryId: number, description: string, img: string): Promise<number> => {
     const { data, error } = await supabase
       .from('books')
       .insert({
-        title: title,
-        author: author,
-        category_id: categoryId,     
+        title,
+        author,
+        price,
+        category_id: categoryId,
+        description: description, // [MỚI]
+        img: img,                 // [MỚI]
       })
       .select('id')
       .single();
@@ -26,12 +32,11 @@ export const BookRepository = {
       console.error('Lỗi khi tạo book:', error);
       throw error;
     }
-
     return data.id;
   },
 
   /**
-   * Lấy tất cả books kèm theo tên category
+   * Lấy tất cả books
    */
   getAll: async (): Promise<Book[]> => {
     const { data, error } = await supabase
@@ -40,25 +45,28 @@ export const BookRepository = {
         id,
         title,
         author,
-        categories ( name )  // <-- Phép thuật là ở đây!
-      `);
+        price,
+        category_id,
+        description,    
+        img,            
+        categories ( name ) 
+      `); // Lưu ý: Không để dấu phẩy cuối cùng
 
     if (error) {
-      console.error('Lỗi khi lấy books:', error);
+      console.error('❌ LỖI SUPABASE:', error.message); 
       throw error;
     }
 
-    // Supabase sẽ trả về data dạng:
-    // [
-    //   { id: 1, title: "...", author: "...", categories: { name: "Fiction" } },
-    //   { id: 2, title: "...", author: "...", categories: null }
-    // ]
-    
-    const mappedBooks: Book[] = (data || []).map(book => ({
+    // console.log('✅ Dữ liệu lấy về:', data); 
+
+    const mappedBooks: Book[] = (data || []).map((book: any) => ({
       id: book.id,
       title: book.title,
       author: book.author,
-      category: book.categories ? book.categories.name : null, // "Làm phẳng" đối tượng
+      price: book.price,      
+      category: book.categories?.name || 'Chưa phân loại',
+      description: book.description || 'Chưa có mô tả cho sách này.', // [MỚI] Fallback nếu null
+      imageUrl: book.img || null, // [MỚI] Lấy link ảnh từ cột img
     }));
 
     return mappedBooks;

@@ -8,7 +8,7 @@ export default function LoginScreen({ navigation }) {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
-  async function handleLogin() {
+async function handleLogin() {
     if (!email || !password) {
       Alert.alert('Thông báo', 'Vui lòng nhập email và mật khẩu');
       return;
@@ -16,20 +16,16 @@ export default function LoginScreen({ navigation }) {
 
     setLoading(true);
 
-    // GỌI REPOSITORY
     const { error } = await AuthRepository.login(email, password);
     
     setLoading(false);
 
     if (error) {
       Alert.alert('Đăng nhập thất bại', error.message);
-    } 
-    // LƯU Ý: Nếu thành công, Supabase sẽ tự lưu session. 
-    // File App.js đang lắng nghe (onAuthStateChange) sẽ tự động chuyển màn hình sang TabNavigator.
-    // Bạn không cần gọi navigation.navigate('Home') ở đây.
-  }
-
-  return (
+    } else {
+     navigation.replace('MainTabs');
+    }
+  }  return (
     <View style={styles.container}>
       <Text style={styles.title}>Đăng nhập</Text>
 

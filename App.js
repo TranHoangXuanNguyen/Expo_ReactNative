@@ -1,7 +1,27 @@
-
 import React from 'react';
-import AppNavigator from './src/navigation/AppNavigator'; // Import từ src/
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import TabNavigator from './src/navigation/TabNavigator';
+import LoginScreen from './src/screens/auth/LoginScreen';
+import RegisterScreen from './src/screens/auth/RegisterScreen';
+import MyOrdersScreen from './src/screens/MyOrdersScreen';
+const Stack = createStackNavigator();
 
 export default function App() {
-  return <AppNavigator />;
+  return (
+  <SafeAreaProvider>
+    <NavigationContainer>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        
+        <Stack.Screen name="MainTabs" component={TabNavigator} />
+        
+        <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="Register" component={RegisterScreen} />
+        <Stack.Screen name="MyOrders" component={MyOrdersScreen} />
+
+        </Stack.Navigator>
+    </NavigationContainer>
+   </SafeAreaProvider> 
+  );
 }

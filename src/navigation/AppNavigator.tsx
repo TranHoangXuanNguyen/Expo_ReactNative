@@ -25,9 +25,7 @@ export default function AppNavigator() {
 
   return (
     <NavigationContainer>
-      {session && session.user ? (
-        <TabNavigator />        ) : (
-        <AuthStackNavigator />       )}
+        <TabNavigator />        
     </NavigationContainer>
   );
 }
