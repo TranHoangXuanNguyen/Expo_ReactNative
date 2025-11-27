@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import Header from '../../components/Header';
+import Header from '../../components/Header'; // Đảm bảo đường dẫn đúng
 
 export default function AdminDashboard({ navigation }) {
   return (
@@ -9,7 +9,6 @@ export default function AdminDashboard({ navigation }) {
       <Header title="Admin Dashboard" showBack={true} />
       
       <View style={styles.grid}>
-        {/* Nút Quản lý Sản phẩm */}
         <TouchableOpacity 
           style={styles.card} 
           onPress={() => navigation.navigate('AdminProducts')}
@@ -19,7 +18,6 @@ export default function AdminDashboard({ navigation }) {
           <Text style={styles.subText}>Thêm, sửa, xóa sách</Text>
         </TouchableOpacity>
 
-        {/* Nút Quản lý Đơn hàng */}
         <TouchableOpacity 
           style={styles.card}
           onPress={() => navigation.navigate('AdminOrders')}
@@ -28,6 +26,16 @@ export default function AdminDashboard({ navigation }) {
           <Text style={styles.cardText}>Quản lý Đơn hàng</Text>
           <Text style={styles.subText}>Xem và duyệt đơn</Text>
         </TouchableOpacity>
+
+        <TouchableOpacity 
+          style={styles.card}
+          onPress={() => navigation.navigate('AdminCategories')}
+        >
+          <Ionicons name="pricetags" size={40} color="#9b59b6" />
+          <Text style={styles.cardText}>Quản lý Danh mục</Text>
+          <Text style={styles.subText}>Phân loại sản phẩm</Text>
+        </TouchableOpacity>
+        
       </View>
     </View>
   );

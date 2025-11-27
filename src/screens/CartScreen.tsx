@@ -22,8 +22,6 @@ export default function CartScreen({ navigation }) {
       if (!user) {
         setLoading(false); return;
       }
-
-      // Join bảng cart_items với books để lấy thông tin sách
       const { data, error } = await supabase
         .from('cart_items')
         .select('*, books(*)')
@@ -59,7 +57,6 @@ export default function CartScreen({ navigation }) {
           try {
             const { data: { user } } = await supabase.auth.getUser();
             
-            // 1. Tạo Order
             const { data: order, error: orderError } = await supabase
               .from('orders')
               .insert({ user_id: user.id, total_price: total, status: 'pending' })
@@ -68,7 +65,6 @@ export default function CartScreen({ navigation }) {
 
             if (orderError) throw orderError;
 
-            // 2. Tạo Order Items (Chi tiết đơn hàng)
             const orderItemsData = cartItems.map(item => ({
               order_id: order.id,
               book_id: item.book_id,
@@ -79,7 +75,6 @@ export default function CartScreen({ navigation }) {
             const { error: itemsError } = await supabase.from('order_items').insert(orderItemsData);
             if (itemsError) throw itemsError;
 
-            // 3. Xóa giỏ hàng
             await supabase.from('cart_items').delete().eq('user_id', user.id);
 
             Alert.alert("Thành công", "Đơn hàng đã được tạo!");

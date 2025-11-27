@@ -16,21 +16,18 @@ const { width } = Dimensions.get('window');
 
 export default function HomeScreen({ navigation }) {
 
-  // Hàm điều hướng chung
   const handleNavigate = (screen) => {
     navigation.navigate(screen);
   };
 
   return (
     <View style={styles.container}>
-      {/* Header thông minh bạn đã làm */}
       <Header title="BookStore VIP" showBack={false} showLogout={true} />
 
       <ScrollView 
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        {/* 1. BANNER SECTION */}
         <View style={styles.bannerContainer}>
           <Image 
             source={{ uri: 'https://images.unsplash.com/photo-1507842217343-583bb7270b66?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80' }} 
@@ -42,11 +39,9 @@ export default function HomeScreen({ navigation }) {
           </View>
         </View>
 
-        {/* 2. MAIN MENU (2 BUTTONS) */}
         <Text style={styles.sectionTitle}>Chức năng chính</Text>
         
         <View style={styles.menuContainer}>
-          {/* Nút 1: SHOP (Tất cả sản phẩm) */}
           <TouchableOpacity 
             style={styles.menuItem}
             activeOpacity={0.9}
@@ -63,7 +58,6 @@ export default function HomeScreen({ navigation }) {
             </LinearGradient>
           </TouchableOpacity>
 
-          {/* Nút 2: CATEGORIES (Danh mục) */}
           <TouchableOpacity 
             style={styles.menuItem}
             activeOpacity={0.9}
@@ -102,8 +96,7 @@ export default function HomeScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8F9FD', // Màu nền xám xanh rất nhạt, hiện đại
-  },
+    backgroundColor: '#F8F9FD',  },
   scrollContent: {
     paddingBottom: 30,
   },
@@ -128,7 +121,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     padding: 20,
-    backgroundColor: 'rgba(0,0,0,0.3)', // Lớp phủ tối để chữ dễ đọc
+    backgroundColor: 'rgba(0,0,0,0.3)',
     borderBottomLeftRadius: 30,
     borderBottomRightRadius: 30,
   },
@@ -163,7 +156,7 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   menuItem: {
-    width: (width - 55) / 2, // Tính toán để chia đôi màn hình có khoảng cách
+    width: (width - 55) / 2,  
     height: 160,
     borderRadius: 20,
     // Shadow
@@ -192,7 +185,6 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
 
-  // --- PROMO / LIST STYLES ---
   promoContainer: {
     paddingHorizontal: 20,
   },
@@ -212,7 +204,7 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
-    backgroundColor: '#FFF9C4', // Vàng nhạt
+    backgroundColor: '#FFF9C4',  
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 15,

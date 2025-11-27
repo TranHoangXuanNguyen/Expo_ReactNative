@@ -5,12 +5,10 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Header from '../components/Header';
-import { supabase } from '../lib/supabaseClient'; // [1] Import Supabase
-
+import { supabase } from '../lib/supabaseClient';
 export default function DetailsScreen({ route, navigation }) {
   const { book } = route.params; 
-  const [adding, setAdding] = useState(false); // [2] State để hiển thị loading khi đang thêm
-
+  const [adding, setAdding] = useState(false); 
   const handleAddToCart = async () => {
     setAdding(true);
     try {

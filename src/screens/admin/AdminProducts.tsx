@@ -16,7 +16,7 @@ export default function AdminProducts() {
   const [categories, setCategories] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [editingBook, setEditingBook] = useState(null);
-  
+  const [description, setDescription] = useState('');
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
   const [price, setPrice] = useState('');
@@ -42,7 +42,6 @@ export default function AdminProducts() {
 
   const pickImage = async () => {
     try {
-      // [FIX 2] Sửa MediaTypeOptions thành MediaType
       let result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images, // <--- Đã sửa
         allowsEditing: true,
@@ -96,7 +95,7 @@ const uploadToSupabase = async (uri) => {
     }
 
     const payload = { 
-      title, author, price: parseFloat(price), img, category_id: selectedCatId 
+      title, author, price: parseFloat(price), img, category_id: selectedCatId,description: description 
     };
     
     if (editingBook) {
@@ -119,11 +118,12 @@ const uploadToSupabase = async (uri) => {
     setPrice(book.price.toString());
     setImg(book.img || '');
     setSelectedCatId(book.category_id);
+    setDescription(book.description || '');
     setModalVisible(true);
   };
 
   const resetForm = () => {
-    setEditingBook(null); setTitle(''); setAuthor(''); setPrice(''); setImg(''); setSelectedCatId(null);
+    setEditingBook(null); setTitle(''); setAuthor(''); setPrice(''); setImg(''); setSelectedCatId(null); setDescription('');
   };
 
   return (
@@ -186,6 +186,17 @@ const uploadToSupabase = async (uri) => {
             
             <Text style={styles.label}>Giá (VNĐ):</Text>
             <TextInput style={styles.input} value={price} keyboardType="numeric" onChangeText={setPrice} />
+
+            <Text style={styles.label}>Mô tả sách:</Text>
+            <TextInput 
+              style={[styles.input, styles.textArea]} // Thêm style textArea để cao hơn
+              value={description} 
+              onChangeText={setDescription} 
+              multiline={true}  
+              numberOfLines={4} 
+              placeholder="Nhập nội dung tóm tắt hoặc giới thiệu sách..."
+              textAlignVertical="top" 
+            />
             
             <Text style={styles.label}>Danh mục:</Text>
             <View style={styles.categoryContainer}>
@@ -240,5 +251,7 @@ const styles = StyleSheet.create({
   catText: { color: '#333', fontSize: 12 },
   catTextSelected: { color: '#fff', fontWeight: 'bold' },
   saveBtn: { backgroundColor: '#4A90E2', padding: 15, borderRadius: 8, alignItems: 'center', marginTop: 30 },
-  cancelBtn: { padding: 15, alignItems: 'center', marginTop: 10 }
+  cancelBtn: { padding: 15, alignItems: 'center', marginTop: 10 },
+
+  textArea: {height: 100,    textAlignVertical: 'top',    paddingTop: 10,}
 });

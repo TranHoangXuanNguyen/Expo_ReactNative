@@ -18,7 +18,6 @@ export default function RegisterScreen({ navigation }) {
 
     setLoading(true);
     
-    // GỌI REPOSITORY
     const { error } = await AuthRepository.register(email, password, fullName);
 
     setLoading(false);

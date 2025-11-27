@@ -10,6 +10,7 @@ import CartScreen from '../screens/CartScreen';
 import AdminDashboard from '../screens/admin/AdminDashboard';
 import AdminProducts from '../screens/admin/AdminProducts';
 import AdminOrders from '../screens/admin/AdminOrders';
+import AdminCategoryScreen from '../screens/admin/AdminCategoryScreen';
 const HomeStack = createNativeStackNavigator();
 
 export default function HomeStackNavigator() {
@@ -30,6 +31,7 @@ export default function HomeStackNavigator() {
       <HomeStack.Screen name="AdminDashboard" component={AdminDashboard} />
       <HomeStack.Screen name="AdminProducts" component={AdminProducts} />
       <HomeStack.Screen name="AdminOrders" component={AdminOrders} />
+      <HomeStack.Screen name="AdminCategories" component={AdminCategoryScreen} />
     </HomeStack.Navigator>
   );
 }

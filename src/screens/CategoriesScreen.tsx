@@ -23,19 +23,25 @@ export default function CategoriesScreen({ navigation }) {
       .finally(() => setLoading(false));
   }, []);
 
+
   const renderItem = ({ item, index }) => {
-    // Chọn màu ngẫu nhiên dựa trên index
     const colors = GRADIENTS[index % GRADIENTS.length];
 
     return (
-      <TouchableOpacity style={styles.itemContainer} activeOpacity={0.8}>
+      <TouchableOpacity 
+        style={styles.itemContainer} 
+        activeOpacity={0.8}
+        onPress={() => {
+          navigation.navigate('Shop', { categoryId: item.id });
+        }}
+      >
         <LinearGradient
           colors={colors}
           start={{x: 0, y: 0}} end={{x: 1, y: 0}}
           style={styles.gradientBg}
         >
           <View style={styles.iconContainer}>
-             <Ionicons name="bookmarks" size={24} color="#fff" />
+              <Ionicons name="bookmarks" size={24} color="#fff" />
           </View>
           <View style={styles.textContainer}>
             <Text style={styles.catName}>{item.name}</Text>
@@ -45,9 +51,7 @@ export default function CategoriesScreen({ navigation }) {
         </LinearGradient>
       </TouchableOpacity>
     );
-  };
-
-  return (
+  };  return (
     <View style={styles.container}>
       <Header title="Danh Mục" showBack={true} />
       

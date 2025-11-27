@@ -14,17 +14,13 @@ export default function MyOrdersScreen({ navigation }) {
 
   const fetchOrders = async () => {
     try {
-      // 1. Lấy User hiện tại
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
-
-      // 2. Lấy danh sách đơn hàng của User đó
       const { data, error } = await supabase
         .from('orders')
         .select('*')
         .eq('user_id', user.id)
-        .order('created_at', { ascending: false }); // Mới nhất lên đầu
-
+        .order('created_at', { ascending: false });
       if (error) throw error;
       setOrders(data || []);
     } catch (error) {
@@ -34,7 +30,6 @@ export default function MyOrdersScreen({ navigation }) {
     }
   };
 
-  // Hàm hiển thị màu sắc trạng thái
   const getStatusColor = (status) => {
     switch (status) {
       case 'completed': return 'green';

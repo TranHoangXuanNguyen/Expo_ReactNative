@@ -79,12 +79,10 @@ export default function ProfileScreen({ navigation }) {
       )}
 <TouchableOpacity 
         style={styles.menuItem}
-        onPress={() => navigation.navigate('MyOrders')} // <--- [SỬA] Thêm sự kiện navigate
-      >
+        onPress={() => navigation.navigate('MyOrders')}       >
         <Ionicons name="list" size={24} color="#333" />
         <Text style={styles.menuText}>Đơn hàng của tôi</Text>
       </TouchableOpacity>
-
       <TouchableOpacity style={[styles.menuItem, { marginTop: 20 }]} onPress={handleLogout}>
         <Ionicons name="log-out-outline" size={24} color="red" />
         <Text style={[styles.menuText, { color: 'red' }]}>Đăng xuất</Text>
@@ -110,5 +108,5 @@ const styles = StyleSheet.create({
   },
   menuText: { marginLeft: 15, fontSize: 16, fontWeight: '500' },
   
-  adminItem: { backgroundColor: '#2c3e50' } // Màu đậm cho Admin
+  adminItem: { backgroundColor: '#2c3e50' }
 });

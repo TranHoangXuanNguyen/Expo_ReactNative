@@ -1,32 +1,89 @@
 import React, { useEffect, useState } from 'react';
 import { 
   View, Text, StyleSheet, FlatList, Image, 
-  TouchableOpacity, ActivityIndicator, Dimensions 
+  TouchableOpacity, ActivityIndicator, Dimensions, TextInput 
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Header from '../components/Header';
 import { BookRepository } from '../database/repositories/BookRepository'; 
+import { CategoryRepository } from '../database/repositories/CategoryRepository'; // Import thêm cái này
 
 const { width } = Dimensions.get('window');
 const COLUMN_WIDTH = (width - 45) / 2;
 
-export default function ShopScreen({ navigation }) {
-  const [books, setBooks] = useState([]);
+export default function ShopScreen({ navigation,route }) {
+  const [books, setBooks] = useState([]); 
+  const [filteredBooks, setFilteredBooks] = useState([]); 
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchText, setSearchText] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState(null); // null = Tất cả
 
+useEffect(() => {
+   
+    if (route.params && route.params.categoryId) {
+      setSelectedCategory(route.params.categoryId);
+      navigation.setParams({ categoryId: null });
+    }
+  }, [route.params]);
   useEffect(() => {
-    loadBooks();
+    loadData();
   }, []);
 
-  const loadBooks = async () => {
+  useEffect(() => {
+    filterBooks();
+  }, [searchText, selectedCategory, books]);
+
+  const loadData = async () => {
     try {
-      const data = await BookRepository.getAll();
-      setBooks(data);
+      setLoading(true);
+      const [booksData, categoriesData] = await Promise.all([
+        BookRepository.getAll(),
+        CategoryRepository.getAll()
+      ]);
+
+      setBooks(booksData);
+      setCategories([{ id: null, name: 'Tất cả' }, ...categoriesData]);
+      setFilteredBooks(booksData);
     } catch (error) {
-      console.error(error);
+      console.error("Lỗi load data:", error);
     } finally {
       setLoading(false);
     }
+  };
+
+const filterBooks = () => {
+    let result = books;
+
+    if (searchText) {
+      result = result.filter(book => 
+        book.title.toLowerCase().includes(searchText.toLowerCase())
+      );
+    }
+
+    if (selectedCategory !== null) {
+      const selectedCatObj = categories.find(cat => cat.id === selectedCategory);
+
+      if (selectedCatObj) {
+        result = result.filter(book => book.category === selectedCatObj.name);
+      }
+    }
+
+    setFilteredBooks(result);
+  };
+
+  const renderCategoryItem = ({ item }) => {
+    const isSelected = selectedCategory === item.id;
+    return (
+      <TouchableOpacity 
+        style={[styles.catItem, isSelected && styles.catItemActive]}
+        onPress={() => setSelectedCategory(item.id)}
+      >
+        <Text style={[styles.catText, isSelected && styles.catTextActive]}>
+          {item.name}
+        </Text>
+      </TouchableOpacity>
+    );
   };
 
   const renderBookItem = ({ item }) => (
@@ -34,7 +91,6 @@ export default function ShopScreen({ navigation }) {
       style={styles.card}
       onPress={() => navigation.navigate('Details', { book: item })} 
     >
-      {/* [CẬP NHẬT] Dùng ảnh thật từ DB. Nếu không có (null) thì dùng ảnh mẫu Unsplash */}
       <Image 
         source={{ uri: item.imageUrl ? item.imageUrl : `https://source.unsplash.com/random/200x300?book&sig=${item.id}` }} 
         style={styles.bookImage} 
@@ -59,20 +115,51 @@ export default function ShopScreen({ navigation }) {
     <View style={styles.container}>
       <Header title="Kho Sách" showBack={true} />
       
+      <View style={styles.filterContainer}>
+        {/* Search Bar */}
+        <View style={styles.searchBar}>
+          <Ionicons name="search" size={20} color="#888" style={{ marginRight: 8 }} />
+          <TextInput 
+            placeholder="Tìm kiếm sách..."
+            style={styles.searchInput}
+            value={searchText}
+            onChangeText={setSearchText}
+          />
+          {searchText.length > 0 && (
+            <TouchableOpacity onPress={() => setSearchText('')}>
+               <Ionicons name="close-circle" size={18} color="#888" />
+            </TouchableOpacity>
+          )}
+        </View>
+
+        {/* Category Horizontal List */}
+        <View style={{ marginTop: 12 }}>
+          <FlatList 
+            data={categories}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            keyExtractor={item => item.id === null ? 'all' : item.id.toString()}
+            renderItem={renderCategoryItem}
+          />
+        </View>
+      </View>
+
       {loading ? (
         <View style={styles.center}>
           <ActivityIndicator size="large" color="#4A90E2" />
         </View>
       ) : (
         <FlatList
-          data={books}
+          data={filteredBooks} // Dùng filteredBooks thay vì books
           renderItem={renderBookItem}
           keyExtractor={(item) => item.id.toString()}
           numColumns={2}
           columnWrapperStyle={styles.row}
           contentContainerStyle={styles.listContent}
           ListEmptyComponent={
-            <Text style={styles.emptyText}>Chưa có sách nào trong kho.</Text>
+            <Text style={styles.emptyText}>
+              Không tìm thấy sách phù hợp.
+            </Text>
           }
         />
       )}
@@ -83,9 +170,56 @@ export default function ShopScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F5F7FA' },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  listContent: { padding: 15 },
+  listContent: { padding: 15, paddingTop: 5 }, // Giảm padding top vì đã có filter ở trên
   row: { justifyContent: 'space-between' },
   emptyText: { textAlign: 'center', marginTop: 50, color: '#888' },
+  
+  // Style cho Filter
+  filterContainer: {
+    backgroundColor: '#fff',
+    padding: 15,
+    paddingBottom: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
+  searchBar: {
+    flexDirection: 'row',
+    backgroundColor: '#F0F2F5',
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    height: 40,
+    alignItems: 'center',
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 14,
+    color: '#333',
+  },
+  // Style cho Category Item
+  catItem: {
+    paddingVertical: 6,
+    paddingHorizontal: 16,
+    backgroundColor: '#F0F2F5',
+    borderRadius: 20,
+    marginRight: 10,
+    borderWidth: 1,
+    borderColor: 'transparent',
+  },
+  catItemActive: {
+    backgroundColor: '#EBF5FF',
+    borderColor: '#4A90E2',
+  },
+  catText: {
+    fontSize: 13,
+    color: '#666',
+    fontWeight: '500',
+  },
+  catTextActive: {
+    color: '#4A90E2',
+    fontWeight: 'bold',
+  },
+
+  // Style Card Sách (Giữ nguyên)
   card: {
     width: COLUMN_WIDTH,
     backgroundColor: '#fff',

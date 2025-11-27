@@ -9,7 +9,6 @@ export default function AdminOrders() {
   useEffect(() => { fetchOrders(); }, []);
 
   const fetchOrders = async () => {
-    // Lấy orders kèm thông tin user (nếu muốn hiện tên người mua cần join bảng profiles)
     const { data, error } = await supabase
         .from('orders')
         .select('*')

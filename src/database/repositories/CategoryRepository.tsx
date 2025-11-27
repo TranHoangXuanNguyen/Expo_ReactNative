@@ -1,45 +1,63 @@
-// CategoryRepository.ts
 import { supabase } from '../../lib/supabaseClient'; 
 
-// Interface (giữ nguyên)
 export interface Category {
   id: number;
   name: string;
 }
 
 export const CategoryRepository = {
-  /**
-   * Tạo một category mới và trả về ID của nó
-   */
+  // ... (Giữ nguyên hàm create và getAll cũ của bạn ở đây) ...
+
   create: async (name: string): Promise<number> => {
-    // Thay thế "new Promise" và "db.transaction" bằng async/await
     const { data, error } = await supabase
-      .from('categories') // Tên bảng
-      .insert({ name: name }) // Dữ liệu cần chèn
-      .select('id') // Yêu cầu trả về cột 'id'
-      .single(); // Vì ta biết chỉ chèn 1 hàng
+      .from('categories')
+      .insert({ name: name })
+      .select('id')
+      .single();
 
-    if (error) {
-      console.error('Lỗi khi tạo category:', error);
-      throw error;
-    }
-
-    return data.id; // Trả về ID
+    if (error) throw error;
+    return data.id;
   },
 
-  /**
-   * Lấy tất cả các categories
-   */
   getAll: async (): Promise<Category[]> => {
     const { data, error } = await supabase
       .from('categories')
-      .select('*'); // Tương đương 'SELECT * FROM categories'
+      .select('*')
+      .order('id', { ascending: true }); // Sắp xếp cho đẹp
+
+    if (error) throw error;
+    return data || [];
+  },
+
+  // --- THÊM MỚI ---
+  
+  /**
+   * Cập nhật tên category
+   */
+  update: async (id: number, name: string): Promise<void> => {
+    const { error } = await supabase
+      .from('categories')
+      .update({ name: name })
+      .eq('id', id);
 
     if (error) {
-      console.error('Lỗi khi lấy categories:', error);
+      console.error('Lỗi khi update category:', error);
       throw error;
     }
-
-    return data || []; // Trả về mảng data, hoặc mảng rỗng nếu không có
   },
+
+  /**
+   * Xóa category
+   */
+  delete: async (id: number): Promise<void> => {
+    const { error } = await supabase
+      .from('categories')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      console.error('Lỗi khi xóa category:', error);
+      throw error;
+    }
+  }
 };
