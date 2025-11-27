@@ -10,7 +10,13 @@ import { CategoryRepository } from '../database/repositories/CategoryRepository'
 
 const { width } = Dimensions.get('window');
 const COLUMN_WIDTH = (width - 45) / 2;
-
+const PRICE_RANGES = [
+  { id: 'all', label: 'Tất cả giá', min: 0, max: Infinity },
+  { id: 'r1', label: 'Dưới 50k', min: 0, max: 50000 },
+  { id: 'r2', label: '50k - 100k', min: 50000, max: 100000 },
+  { id: 'r3', label: '100k - 200k', min: 100000, max: 200000 },
+  { id: 'r4', label: 'Trên 200k', min: 200000, max: Infinity },
+];
 export default function ShopScreen({ navigation,route }) {
   const [books, setBooks] = useState([]); 
   const [filteredBooks, setFilteredBooks] = useState([]); 
@@ -18,6 +24,7 @@ export default function ShopScreen({ navigation,route }) {
   const [loading, setLoading] = useState(true);
   const [searchText, setSearchText] = useState('');
   const [selectedCategory, setSelectedCategory] = useState(null); // null = Tất cả
+  const [selectedPriceRange, setSelectedPriceRange] = useState(PRICE_RANGES[0]);
 
 useEffect(() => {
    
@@ -32,7 +39,7 @@ useEffect(() => {
 
   useEffect(() => {
     filterBooks();
-  }, [searchText, selectedCategory, books]);
+  }, [searchText, selectedCategory, books, selectedPriceRange]);
 
   const loadData = async () => {
     try {
@@ -67,6 +74,12 @@ const filterBooks = () => {
       if (selectedCatObj) {
         result = result.filter(book => book.category === selectedCatObj.name);
       }
+    }
+
+    if (selectedPriceRange.id !== 'all') {
+      result = result.filter(book => 
+        book.price >= selectedPriceRange.min && book.price <= selectedPriceRange.max
+      );
     }
 
     setFilteredBooks(result);
@@ -110,7 +123,19 @@ const filterBooks = () => {
       </View>
     </TouchableOpacity>
   );
-
+const renderPriceItem = ({ item }) => {
+    const isSelected = selectedPriceRange.id === item.id;
+    return (
+      <TouchableOpacity 
+        style={[styles.catItem, isSelected && styles.catItemActive]}
+        onPress={() => setSelectedPriceRange(item)}
+      >
+        <Text style={[styles.catText, isSelected && styles.catTextActive]}>
+          {item.label}
+        </Text>
+      </TouchableOpacity>
+    );
+  };
   return (
     <View style={styles.container}>
       <Header title="Kho Sách" showBack={true} />
@@ -140,6 +165,17 @@ const filterBooks = () => {
             showsHorizontalScrollIndicator={false}
             keyExtractor={item => item.id === null ? 'all' : item.id.toString()}
             renderItem={renderCategoryItem}
+          />
+        </View>
+        {/* Price Range Horizontal List */}
+        <View style={{ marginTop: 10 }}>
+          <Text style={styles.sectionLabel}>Khoảng giá:</Text>
+          <FlatList 
+            data={PRICE_RANGES}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            keyExtractor={item => item.id}
+            renderItem={renderPriceItem}
           />
         </View>
       </View>
@@ -269,5 +305,12 @@ const styles = StyleSheet.create({
     height: 24,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  sectionLabel: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 5,
+    marginLeft: 4
   }
 });

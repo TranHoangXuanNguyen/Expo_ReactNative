@@ -35,6 +35,15 @@ export default function AdminDashboard({ navigation }) {
           <Text style={styles.cardText}>Quản lý Danh mục</Text>
           <Text style={styles.subText}>Phân loại sản phẩm</Text>
         </TouchableOpacity>
+
+        <TouchableOpacity 
+          style={styles.card}
+          onPress={() => navigation.navigate('AdminUsers')}
+        >
+          <Ionicons name="people" size={40} color="#e67e22" /> 
+          <Text style={styles.cardText}>Quản lý User</Text>
+          <Text style={styles.subText}>Phân quyền, xem list</Text>
+        </TouchableOpacity>
         
       </View>
     </View>
